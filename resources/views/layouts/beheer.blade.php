@@ -25,12 +25,12 @@
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0 flex-lg-column">
                     <li class="nav-item active">
                         <span class="nav-link">
-                            {{ trans('menu.user') }}
+                            {{ 'User' }}
                         </span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('/users/'. Auth::user()->id) . '?back=false'}}">
-                            {{ trans('menu.account_overview') }}
+                            {{ 'Account overview' }}
                         </a>
                     </li>
                     @if (Auth::guest())
@@ -45,7 +45,7 @@
 
                             <li class="nav-item active">
                                 <span class="nav-link">
-                                    {{ trans('menu.beheer') }}
+                                    {{ 'Management' }}
                                 </span>
                             </li>
                             <li class="nav-item">
@@ -57,54 +57,43 @@
                         @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Administrator'),Config::get('constants.Certificate_administrator')))
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{trans("menu.leden")}}
+                                    {{'Members'}}
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{{ url('users') }}">{{trans("user.current_members")}}</a>
+                                    <a class="dropdown-item" href="{{ url('users') }}">{{'Current members'}}</a>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Administrator')))
-                                        <a class="dropdown-item" href="{{ url('users/old_members') }}">{{trans("user.old_members")}}</a>
-                                        <a class="dropdown-item" href="{{ url('users/pending_members') }}">{{trans("user.pending_members")}}</a>
-                                        <a class="dropdown-item" href="{{ url('rols') }}">{{trans("menu.rols")}}</a>
+                                        <a class="dropdown-item" href="{{ url('users/old_members') }}">{{'Old members'}}</a>
+                                        <a class="dropdown-item" href="{{ url('users/pending_members') }}">{{'Pending users'}}</a>
+                                        <a class="dropdown-item" href="{{ url('rols') }}">{{'Roles'}}</a>
                                     @endif
-                                    <a class="dropdown-item" href="{{ url('certificates') }}">{{trans("menu.certificate")}}</a>
+                                    <a class="dropdown-item" href="{{ url('certificates') }}">{{'Certificates'}}</a>
                                 </div>
                             </li>
                         @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Content_administrator'),Config::get('constants.Activity_administrator')))
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{trans("menu.activities")}}
+                                    {{'Activities'}}
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{{ url('agendaItems') }}">{{trans("menu.agendaItems")}}</a>
-                                    <a class="dropdown-item" href="{{ route('beheer.applicationForms.index') }}">{{trans("menu.applicationForms")}}</a>
+                                    <a class="dropdown-item" href="{{ url('agendaItems') }}">{{'Events'}}</a>
+                                    <a class="dropdown-item" href="{{ route('beheer.applicationForms.index') }}">{{'Application forms'}}</a>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Administrator')))
-                                        <a class="dropdown-item" href="{{ url('agendaItemCategories') }}">{{trans("menu.agendaItemCategories")}}</a>
+                                        <a class="dropdown-item" href="{{ url('agendaItemCategories') }}">{{'Event categories'}}</a>
                                     @endif
-                                </div>
-                            </li>
-                        @endif
-                        @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Content_administrator'),Config::get('constants.Activity_administrator')))
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{trans("menu.intro")}}
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{{ route('beheer.intro.packages.index') }}">{{trans("menu.introPackages")}}</a>
                                 </div>
                             </li>
                         @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Content_administrator')))
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{trans("menu.content")}}
+                                    {{'Content'}}
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{{ url('pages') }}">{{trans("menu.paginaBeheer")}}</a>
-                                    <a class="dropdown-item" href="{{ url('newsItems') }}">{{trans("menu.newsItems")}}</a>
-                                    <a class="dropdown-item" href="{{ url('photoAlbums') }}">{{trans("menu.photoAlbums")}}</a>
+                                    <a class="dropdown-item" href="{{ url('pages') }}">{{'Page management'}}</a>
+                                    <a class="dropdown-item" href="{{ url('newsItems') }}">{{'News items'}}</a>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Administrator')))
-                                        <a class="dropdown-item" href="{{ url('books') }}">{{trans("menu.books")}}</a>
+                                        <a class="dropdown-item" href="{{ url('books') }}">{{'Books'}}</a>
                                     @endif
                                 </div>
                             </li>
@@ -112,12 +101,12 @@
                         @if(\Illuminate\Support\Facades\Auth::user()->hasRole(Config::get('constants.Administrator')))
                             <li class="nav-item">
                                 <a href="{{ url('mailList') }}" class="nav-link">
-                                {{trans("MailList.menuname")}}
+                                {{'Mailing lists'}}
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ url('beheer/settings') }}" class="nav-link">
-                                {{trans("settings.settings")}}
+                                {{'Setting'}}
                                 </a>
                             </li>
                         @endif
@@ -140,11 +129,10 @@
 <script src="{{mix("js/vendor/summernote.js")}}"></script>
 <script>
     $('#users').DataTable();
-    
+
     $(document).ready(function() {
         let $lastClick;
-        let $contentNl = $('#content_nl');
-        let $contentEn = $('#content_en');
+        let $content = $('#content');
 
         // Keep track of the last clicked element.
         $(document).mousedown(function(e) {
@@ -176,8 +164,7 @@
 
         // Initialise summernote textfields & add event to close the code view when focus is lost. This prevents
         // content from being lost, as it is not saved when code view is active.
-        $contentNl.summernote(summernoteSettings).on('summernote.blur.codeview', handleSNBlur);
-        $contentEn.summernote(summernoteSettings).on('summernote.blur.codeview', handleSNBlur);
+        $content.summernote(summernoteSettings).on('summernote.blur.codeview', handleSNBlur);
     });
 </script>
 @endpush

@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\UserRegistrationInfoExport;
-use App\Models\User\UserRegistrationInfo;
-use App\Repositories\RepositorieFactory as RepositorieFactory;
-use App\Rol;
+use App\Repositories\UserRepository;
 use App\Rules\EmailDomainValidator;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
-use Maatwebsite\Excel\Facades\Excel;
 
 class PendingUserController extends Controller
 {
@@ -23,85 +18,78 @@ class PendingUserController extends Controller
      *
      * @return void
      */
-    public function __construct(RepositorieFactory $repositoryFactory)
+    public function __construct(UserRepository $userRepository)
     {
         $this->middleware('auth')->except('storePendingUser');
-        $this->middleware('authorize:'. Config::get('constants.Administrator'))->except('storePendingUser');
-        $this->_userRepository = $repositoryFactory->getRepositorie(RepositorieFactory::$USERREPOKEY);
+        $this->middleware('authorize:' . Config::get('constants.Administrator'))->except('storePendingUser');
+
+        $this->_userRepository = $userRepository;
     }
 
     //pending users view
-    public function indexPendingMembers() {
-        $users = $this->_userRepository->getPendingUsers(array('id','firstname','lastname','email','preposition','kind_of_member'));
+    public function indexPendingMembers()
+    {
+        $users = $this->_userRepository->getPendingUsers(array('id', 'firstname', 'lastname', 'email', 'preposition', 'kind_of_member'));
 
         return view('beheer.user.index_pending_users', compact('users'));
     }
 
     //store pending user
-    public function storePendingUser(Request $request){
+    public function storePendingUser(Request $request)
+    {
         $this->validateInput($request);
 
         $user = $this->_userRepository->createPendingUser($request->all());
 
-        Session::flash("message", trans('front-end/subscribe.success'));
+        Session::flash("message", 'Your membership request is pending, we will get back to you as soon as possible');
 
-        return redirect('/lidworden');
+        return redirect('/signup');
     }
 
-    public function removeAsPendingMember(Request $request, User $user){
-        $registration_info = $user->registrationInfo();
-        if(!is_null($registration_info)){
-            $registration_info->delete();
-        }
-        
+    public function removeAsPendingMember(Request $request, User $user)
+    {
         $user->removeAsPendingMember();
 
         return redirect('users/pending_members');
     }
 
-    public function approveAsPendingMember(Request $request, User $user){
+    public function approveAsPendingMember(Request $request, User $user)
+    {
         $user->approveAsPendingMember();
 
         return redirect('users/pending_members');
     }
 
-    public function getRegistrationExportData(){
-        return Excel::download(
-            new UserRegistrationInfoExport(),
-            trans('user.registrationInfo') . '.xlsx'
-        );
-    }
-
-    private function validateInput(Request $request){
-        $this->validate($request,[
+    private function validateInput(Request $request)
+    {
+        $this->validate($request, [
             'email' => [
                 'required',
                 'email',
                 'max:255',
                 'unique:users',
-                new EmailDomainValidator()
+                new EmailDomainValidator(),
             ],
-            'firstname' => 'required',
-            'lastname' => 'required',
-            'street' => 'required',
-            'houseNumber' => 'required',
-            'city' => 'required',
-            'zipcode' => 'required',
-            'country' => 'required',
-            'phonenumber' => 'required',
-            'emergencyNumber' => 'required',
-            'emergencyHouseNumber' => 'required',
-            'emergencystreet' => 'required',
-            'emergencycity' => 'required',
-            'emergencyzipcode' => 'required',
-            'emergencycountry' => 'required',
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'street' => 'required|max:255',
+            'houseNumber' => 'required|max:255',
+            'city' => 'required|max:255',
+            'zipcode' => 'required|max:255',
+            'country' => 'required|max:255',
+            'phonenumber' => 'required|max:255',
+            'emergencyNumber' => 'required|max:255',
+            'emergencyHouseNumber' => 'required|max:255',
+            'emergencystreet' => 'required|max:255',
+            'emergencycity' => 'required|max:255',
+            'emergencyzipcode' => 'required|max:255',
+            'emergencycountry' => 'required|max:255',
             'birthDay' => 'required|date',
-            'gender' => 'required',
-            'IBAN' => 'required',
+            'IBAN' => 'required|max:255',
             'g-recaptcha-response' => 'required',
             'incasso' => 'required',
             'privacy_policy' => 'required',
-            'termsconditions' => 'required'
+            'termsconditions' => 'required',
         ]);
     }
 }

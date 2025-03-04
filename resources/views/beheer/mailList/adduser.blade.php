@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{trans('MailList.addUsers')}}</h5>
+                <h5 class="modal-title" id="exampleModalLabel">{{'Add members'}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -15,8 +15,8 @@
                     <thead>
                     <tr>
                         <td></td>
-                        <td><strong>{{trans('user.name')}}</strong></td>
-                        <td><strong>{{trans('user.email')}}</strong></td>
+                        <td><strong>{{'Name'}}</strong></td>
+                        <td><strong>{{'Email address'}}</strong></td>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -24,7 +24,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="addUsers" class="btn btn-primary float-right">{{ trans('MailList.addUsers') }}</button>
+                <button id="addUsers" class="btn btn-primary float-right">{{ 'Add members' }}</button>
             </div>
         </div>
     </div>
@@ -33,48 +33,61 @@
 @section('modal_javascript')
     <script>
         var datatable;
-        $(document).ready(function () {
+        var selectedUserIds = [];
+
+        function initializeDataTable() {
             datatable = $('#maillistUserList').DataTable({
-                buttons: [
-                    'pageLength'
-                ],
-                "ajax": '/api/users',
-                "columns": [
+                buttons: ['pageLength'],
+                ajax: '/api/users',
+                columns: [
                     {
-                        "data": "id",
-                        "render": function( data, type, row, meta ) {
-                            return "<input type='checkbox' value='" + data + "' class='user-checkbox'>";
+                        data: "id",
+                        render: function(data) {
+                            let isChecked = selectedUserIds.includes(data.toString()) ? 'checked' : '';
+                            return `<input type='checkbox' value='${data}' class='user-checkbox' ${isChecked}>`;
                         }
                     },
-                    {"data": "name"},
-                    {"data": "email"},
+                    {data: "name"},
+                    {data: "email"},
                 ],
-                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Alles"]]
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Alles"]]
             });
-        });
+        }
 
-        $(document).on('click', '#addUsers', function () {
-            let userIds = [];
+        function toggleUserIdInList(userId) {
+            if (selectedUserIds.includes(userId)) {
+                selectedUserIds.splice(selectedUserIds.indexOf(userId), 1);
+            } else {
+                selectedUserIds.push(userId);
+            }
+        }
 
-            $.each($(".user-checkbox:checked"), function(){
-                userIds.push($(this).val());
-            });
-
+        function addUsersToMailList() {
             var mailListId = '{{$mailList->getId()}}';
             $.ajax({
                 url: '/mailList/' + mailListId + '/member',
                 data: {
-                    userIds: userIds,
+                    userIds: selectedUserIds,
                     _token: window.Laravel.csrfToken
                 },
                 type: 'POST',
-                success: function () {
+                success: function() {
                     window.location.reload();
                 },
-                error: function () {
+                error: function() {
                     window.location.reload();
                 }
             });
+        }
+
+        $(document).ready(function() {
+            initializeDataTable();
+
+            $(document).on('change', '.user-checkbox', function() {
+                toggleUserIdInList($(this).val());
+            });
+
+            $(document).on('click', '#addUsers', addUsersToMailList);
         });
     </script>
 @endsection

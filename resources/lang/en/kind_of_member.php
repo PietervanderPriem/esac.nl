@@ -8,10 +8,10 @@
 
 return [
     "member" => "Member",
-    "extraordinary_member" => "Extraordinary member",
+    "extraordinary_member" => "Extraordinary participant",
     "reunist" => "Reunist",
     "honorary_member" => "Honorary member",
     "member_of_merit" => "Member of service",
     "trainer" => "Trainer",
-    "relationship" => "Relationship"
+    "relationship" => "Relationship",
 ];

@@ -26,14 +26,10 @@ $factory->define(User::class, function (Faker $faker) {
         'emergencyzipcode' => $faker->postcode,
         'emergencycountry' => $faker->country,
         'birthday' => $faker->date(),
-        'gender' => $faker->randomElement([
-            'man',
-            'female'
-        ]),
         'kind_of_member' => 'member',
         'IBAN' => $faker->iban(),
         'BIC' => $faker->bankAccountNumber,
         'incasso' => $faker->boolean,
-        'remark' => $faker->sentence
+        'remark' => $faker->sentence,
     ];
 });

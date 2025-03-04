@@ -13,37 +13,108 @@ class AgendaApplicationFormService
      */
     public function getRegisteredUsers(AgendaItem $agendaItem): array
     {
-        $userdata = array(
-            "agendaitem"   => $agendaItem->agendaItemTitle->text(),
-            "userdata"     => array(),
-            "agendaId"     => $agendaItem->id,
-            "customfields" => array()
-        );
+        // Eager load necessary relationships
+        $agendaItem->load('getApplicationFormResponses.getApplicationResponseUser');
 
+        // Retrieve necessary objects
         $applicationForm = $agendaItem->getApplicationForm;
-        foreach ($applicationForm->applicationFormRows as $application_row) {
-            array_push($userdata["customfields"], $application_row->applicationFormRowName->text());
+        $applicationResponses = $agendaItem->getApplicationFormResponses;
+
+        if (is_null($applicationForm)) {
+            return [
+                "agendaItemTitle" => $agendaItem->title,
+                "agendaItemId" => $agendaItem->id,
+                "userdata" => [],
+            ];
         }
 
-        $applicationResponses = $agendaItem->getApplicationFormResponses;
-        foreach ($applicationResponses as $index => $response) {
-            $user                    = $response->getApplicationResponseUser;
-            $applicationResponseRows = $response->getApplicationFormResponseRows;
-            foreach ($applicationResponseRows as $responseRow) {
-                $columnname        = $responseRow->getApplicationFormRow->applicationFormRowName->text();
-                $user[$columnname] = $responseRow->value;
-            }
-
-            //Adding the signup id in the fields
+        // Map user data
+        $userdata = $applicationResponses->map(function ($response) use ($agendaItem) {
+            $user = $response->getApplicationResponseUser;
             $user["_signupId"] = $response->id;
-            if (true === $agendaItem->climbing_activity) {
+
+            if ($agendaItem->climbing_activity) {
                 $user['certificate_names'] = $user->getCertificationsAbbreviations();
             }
-            array_push($userdata["userdata"], $user);
+            return $user;
+        })->all();
 
+        // Build the final array to return
+        return [
+            "agendaItemTitle" => $agendaItem->title,
+            "agendaItemId" => $agendaItem->id,
+            "userdata" => $userdata,
+        ];
+    }
+
+    /**
+     * @param AgendaItem $agendaItem
+     * @return array
+     */
+    public function getRegisteredUsersWithResponses(AgendaItem $agendaItem): array
+    {
+        // Eager load necessary relationships
+        $agendaItem->load('getApplicationForm.applicationFormRows', 'getApplicationFormResponses.getApplicationResponseUser', 'getApplicationFormResponses.getApplicationFormResponseRows.getApplicationFormRow');
+
+        // Retrieve necessary objects
+        $applicationForm = $agendaItem->getApplicationForm;
+        $applicationResponses = $agendaItem->getApplicationFormResponses;
+
+        if (is_null($applicationForm)) {
+            return [
+                "agendaitem" => $agendaItem->title,
+                "agendaId" => $agendaItem->id,
+                "userdata" => [],
+                "customfields" => [],
+            ];
         }
 
-        return $userdata;
+        // Map custom fields
+        $customfields = $applicationForm->applicationFormRows
+            ->pluck('name')
+            ->all();
+
+        // Map user data
+        $userdata = $applicationResponses->map(function ($response) use ($agendaItem) {
+            $user = $response->getApplicationResponseUser;
+            $user["_signupId"] = $response->id;
+
+            $response->getApplicationFormResponseRows->each(function ($responseRow) use (&$user) {
+                $columnname = $responseRow->getApplicationFormRow->name;
+                $user[$columnname] = $responseRow->value;
+            });
+
+            if ($agendaItem->climbing_activity) {
+                $user['certificate_names'] = $user->getCertificationsAbbreviations();
+            }
+            return $user;
+        })->all();
+
+        // Build the final array to return
+        return [
+            "agendaitem" => $agendaItem->title,
+            "agendaId" => $agendaItem->id,
+            "userdata" => $userdata,
+            "customfields" => $customfields,
+        ];
+    }
+
+    /**
+     * @param AgendaItem $agendaItem
+     * @return array
+     */
+    public function getRegisteredUserIds(AgendaItem $agendaItem): array
+    {
+        // This method now only returns user IDs
+        $applicationResponses = $agendaItem->getApplicationFormResponses;
+
+        // Map user data
+        $userdataIds = $applicationResponses->map(function ($response) {
+            $user = $response->getApplicationResponseUser;
+            return $user->id;
+        })->all();
+
+        return $userdataIds;
     }
 
     /**
@@ -52,7 +123,7 @@ class AgendaApplicationFormService
      */
     public function getExportData(AgendaItem $agendaItem): Collection
     {
-        $users            = $this->getRegisteredUsers($agendaItem);
+        $users = $this->getRegisteredUsersWithResponses($agendaItem);
         $selectedElements = array(
             "firstname",
             "preposition",
@@ -60,8 +131,10 @@ class AgendaApplicationFormService
             "street",
             "houseNumber",
             "city",
+            "zipcode",
             "email",
-            "phonenumber"
+            "phonenumber",
+            "birthDayFormatted",
         );
         $selectedElements = array_merge($selectedElements, $users["customfields"]);
 
@@ -71,6 +144,7 @@ class AgendaApplicationFormService
             foreach ($selectedElements as $element) {
                 $userline[$element] = $user[$element];
             }
+            
             array_push($activeUsers, $userline);
         }
 

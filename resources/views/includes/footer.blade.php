@@ -24,13 +24,13 @@
                 </p>
                 <p class="font-size-180">
                   <span class="p-1"><a href="https://www.facebook.com/esac040" class="ion-social-facebook"></a></span>
-                  <span class="p-1"><a href="https://www.instagram.com/esac040" class="ion-social-instagram"></a></span>
+                  <span class="p-1"><a href="https://www.instagram.com/esac.nl/" class="ion-social-instagram"></a></span>
                   <span class="p-1"><a href="https://www.youtube.com/channel/UCn6jb9BA10f-rbvinYCYlxA/" class="ion-social-youtube"></a></span>
                 </p>
             </div>
             <div class="col-12 col-md-9">
-                <span class="h5">Dé studenten klim- en bergsportvereniging van Eindhoven.</span>
-                <h6>Ondersteund door</h6>
+                <span class="h5">The student climbing and mountaineering association of Eindhoven.</span>
+                <h6>Supported by</h6>
                 <div class="row">
                     <div class="col-6 col-lg-3">
                         <a href="https://venusp.tue.nl/sci-cgi/index.opl"><img class="img-fluid" src="{{asset('img/ssc.png')}}"></a>
@@ -40,14 +40,6 @@
                     </div>
                     <div class="col-6 col-lg-3">
                         <a href="https://www.klimwinkel.nl"><img class="img-fluid" src="{{asset('img/klimwinkel.png')}}"></a>
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-6 col-lg-3">
-                        <a href="https://www.awin1.com/awclick.php?gid=321466&mid=8522&awinaffid=362489&linkid=2031800&clickref="><img class="img-fluid" src="{{asset('img/bever.png')}}"></a>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <a href="https://www.awin1.com/awclick.php?gid=355812&mid=11143&awinaffid=362489&linkid=2326714&clickref="><img class="img-fluid" src="{{asset('img/hunkemoller.jpg')}}" title="Hunkemoller NL homepage"></a>
                     </div>
                 </div>
             </div>
